@@ -19,7 +19,7 @@ Eine moderne, anklickbare Oberflaeche auf HTML/CSS-Basis mit vier Buttons:
 1. **Start** – startet den Vorgang neu
 2. **Ueberspringen und Fortsetzen** – ueberspringe letzte Mappe und setze fort
 3. **Fortsetzen** – ohne zu ueberspringen
-4. **Stop** – beendet das laufende Python-Skript (`copydata.py`)
+4. **Stop** – haelt `copyData.py` **sanft** an (sauber nach der aktuellen Mappe)
 
 Bedienung:
 1. `ui.hta` per Doppelklick starten (oeffnet sich mit `mshta.exe`).
@@ -28,9 +28,15 @@ Bedienung:
 4. **Esc** schliesst die Oberflaeche.
 
 Die zugeordneten Namen stehen oben in `ui.hta` im **CONFIG**-Block
-(`FILE_START`, `FILE_SKIP`, `FILE_RESUME`, `STOP_TARGET`) und koennen dort
-angepasst werden. **Stop** sucht den Prozess, dessen Kommandozeile `STOP_TARGET`
-(Standard: `copydata.py`) enthaelt, und beendet gezielt nur diesen.
+(`FILE_START`, `FILE_SKIP`, `FILE_RESUME`, `STOP_FLAG`) und koennen dort
+angepasst werden.
+
+**Sanftes Beenden (Stop):** Der Stop-Button erzeugt eine Datei `STOP.flag` im
+Skriptverzeichnis. `copyData.py` prueft zu Beginn jeder Schleife (also zwischen
+zwei Mappen), ob diese Datei existiert, beendet sich dann kontrolliert und
+entfernt das Flag wieder. Die aktuell laufende Mappe wird **nie mittendrin**
+abgebrochen, daher kann **Fortsetzen** danach korrekt weitermachen.
+Voraussetzung: `ui.hta` liegt im selben Ordner wie `copyData.py`.
 
 Hinweis: Eine reine `.html`-Datei im Browser darf aus Sicherheitsgruenden keine
 Batch-Dateien starten. Die `.hta` (HTML Application) ist daher noetig – sie ist

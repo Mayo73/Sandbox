@@ -117,7 +117,7 @@
     var FILE_START  = "run.bat";       // Start
     var FILE_SKIP   = "skip.bat";      // Ueberspringen und Fortsetzen
     var FILE_RESUME = "continue.bat";  // Fortsetzen (ohne Ueberspringen)
-    var STOP_TARGET = "copydata.py";   // Stop: Skript, das beendet werden soll
+    var STOP_FLAG   = "STOP.flag";     // Stop: Flag-Datei, die copyData.py auswertet
     /* ========================================================= */
 
     // Verzeichnis dieser HTA ermitteln (damit die Batch-Dateien gefunden werden)
@@ -143,21 +143,13 @@
     function doSkip()   { run(FILE_SKIP);   }
     function doResume() { run(FILE_RESUME); }
 
-    // Stop: beendet gezielt den Prozess, dessen Kommandozeile STOP_TARGET enthaelt
+    // Stop: schreibt die Stop-Flag-Datei. copyData.py erkennt sie und beendet
+    // sich sauber nach der aktuellen Mappe (kein harter Abbruch).
     function doStop() {
-        var shell = new ActiveXObject("WScript.Shell");
-        var ps =
-            "$p=Get-CimInstance Win32_Process | " +
-            "? { $_.CommandLine -like '*" + STOP_TARGET + "*' }; " +
-            "if($p){ $p | % { Stop-Process -Id $_.ProcessId -Force }; exit 0 } else { exit 1 }";
-        var cmd = 'powershell -NoProfile -WindowStyle Hidden -Command "' + ps + '"';
-        // 0 = verstecktes Fenster, true = warten bis fertig
-        var rc = shell.Run(cmd, 0, true);
-        if (rc === 0) {
-            alert(STOP_TARGET + " wurde angehalten.");
-        } else {
-            alert("Es laeuft kein " + STOP_TARGET + ".");
-        }
+        var fso  = new ActiveXObject("Scripting.FileSystemObject");
+        var path = baseDir() + STOP_FLAG;
+        fso.CreateTextFile(path, true).Close();
+        alert("Stop angefordert.\ncopyData.py beendet sich sauber nach der aktuellen Mappe.");
     }
 
     window.onload = function () {

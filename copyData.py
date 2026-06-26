@@ -52,9 +52,24 @@ def delete_line_from_paths_file():
     write_log(f"Fortschritt: {progress:.2f}%")
     write_log("----------------------------------------")
 
+# Stop-Flag für sanftes Beenden: Existiert diese Datei, hält das Skript
+# zwischen zwei Mappen kontrolliert an (kein Abbruch mitten in einer Mappe).
+stop_file = os.path.join(script_dir, "STOP.flag")
+# Evtl. übriggebliebenes altes Flag vor dem Start entfernen
+if os.path.exists(stop_file):
+    os.remove(stop_file)
+
 # Schleife bis paths.txt leer ist
 write_log("----------------------------------------")
 while True:
+    # Sanftes Beenden: zwischen zwei Mappen prüfen, ob ein Stop angefordert wurde.
+    # Die zuletzt bearbeitete Mappe ist hier bereits vollständig fertig, daher
+    # kann "Fortsetzen" anschließend korrekt weitermachen.
+    if os.path.exists(stop_file):
+        write_log("Stop angefordert. Das Skript wird sauber beendet.")
+        os.remove(stop_file)
+        break
+
     if not os.path.exists(paths_file):
         write_log("Die Datei paths.txt existiert nicht. Das Skript wird beendet.")
         break
