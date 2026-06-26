@@ -89,12 +89,15 @@
     .btn.start  .icon { color: #16c60c; }
     .btn.skip   .icon { color: #3b9eff; }
     .btn.resume .icon { color: #e5b700; }
-    .btn.stop   .icon { color: #ff4d4d; }
+    .btn.stop   .icon { color: #ff9d3d; }
+    .btn.kill   .icon { color: #ff4d4d; }
     .btn.start:hover  { border-color: #16c60c; box-shadow: 0 6px 18px rgba(22,198,12,.20); }
     .btn.skip:hover   { border-color: #3b9eff; box-shadow: 0 6px 18px rgba(59,158,255,.20); }
     .btn.resume:hover { border-color: #e5b700; box-shadow: 0 6px 18px rgba(229,183,0,.20); }
-    .btn.stop         { margin-top: 6px; border-color: #4a2a2a; }
-    .btn.stop:hover   { border-color: #ff4d4d; box-shadow: 0 6px 18px rgba(255,77,77,.20); }
+    .btn.stop         { margin-top: 6px; border-color: #4a3a2a; }
+    .btn.stop:hover   { border-color: #ff9d3d; box-shadow: 0 6px 18px rgba(255,157,61,.20); }
+    .btn.kill         { border-color: #4a2a2a; }
+    .btn.kill:hover   { border-color: #ff4d4d; box-shadow: 0 6px 18px rgba(255,77,77,.20); }
     .divider {
         width: 100%;
         max-width: 600px;
@@ -117,7 +120,8 @@
     var FILE_START  = "run.bat";       // Start
     var FILE_SKIP   = "skip.bat";      // Ueberspringen und Fortsetzen
     var FILE_RESUME = "continue.bat";  // Fortsetzen (ohne Ueberspringen)
-    var STOP_FLAG   = "STOP.flag";     // Stop: Flag-Datei, die copyData.py auswertet
+    var STOP_FLAG   = "STOP.flag";     // Stop (sanft): Flag-Datei, die copyData.py auswertet
+    var KILL_TARGET = "copyData.py";   // Stop erzwingen (hart): Prozess, der gekillt wird
     /* ========================================================= */
 
     // Verzeichnis dieser HTA ermitteln (damit die Batch-Dateien gefunden werden)
@@ -143,8 +147,8 @@
     function doSkip()   { run(FILE_SKIP);   }
     function doResume() { run(FILE_RESUME); }
 
-    // Stop: schreibt die Stop-Flag-Datei. copyData.py erkennt sie und beendet
-    // sich sauber nach der aktuellen Mappe (kein harter Abbruch).
+    // Stop (sanft): schreibt die Stop-Flag-Datei. copyData.py erkennt sie und
+    // beendet sich sauber nach der aktuellen Mappe (kein harter Abbruch).
     function doStop() {
         var fso  = new ActiveXObject("Scripting.FileSystemObject");
         var path = baseDir() + STOP_FLAG;
@@ -152,8 +156,28 @@
         alert("Stop angefordert.\ncopyData.py beendet sich sauber nach der aktuellen Mappe.");
     }
 
+    // Stop erzwingen (hart): killt den copyData.py-Prozess sofort. Notbremse.
+    // Achtung: bricht ggf. mitten in einer Mappe ab.
+    function doForceStop() {
+        if (!confirm("Stop erzwingen?\n\n" + KILL_TARGET + " wird SOFORT beendet - die aktuelle Mappe wird ggf. mittendrin abgebrochen.")) {
+            return;
+        }
+        var shell = new ActiveXObject("WScript.Shell");
+        var ps =
+            "$p=Get-CimInstance Win32_Process | " +
+            "? { $_.CommandLine -like '*" + KILL_TARGET + "*' }; " +
+            "if($p){ $p | % { Stop-Process -Id $_.ProcessId -Force }; exit 0 } else { exit 1 }";
+        var cmd = 'powershell -NoProfile -WindowStyle Hidden -Command "' + ps + '"';
+        var rc = shell.Run(cmd, 0, true);
+        if (rc === 0) {
+            alert(KILL_TARGET + " wurde hart beendet.");
+        } else {
+            alert("Es laeuft kein " + KILL_TARGET + ".");
+        }
+    }
+
     window.onload = function () {
-        try { window.resizeTo(720, 700); } catch (e) {}
+        try { window.resizeTo(720, 780); } catch (e) {}
     };
 
     // Tastatur: 1 = Start, 2 = Skip+Fortsetzen, 3 = Fortsetzen, 4 = Stop, Esc = schliessen
@@ -163,6 +187,7 @@
         else if (k === 50) doSkip();       // 2
         else if (k === 51) doResume();     // 3
         else if (k === 52) doStop();       // 4
+        else if (k === 53) doForceStop();  // 5
         else if (k === 27) window.close(); // Esc
     };
 </script>
@@ -170,7 +195,7 @@
 <body>
     <div class="wrap">
         <h1>AUTO LV 2.0</h1>
-        <p class="sub">Waehle eine Option &nbsp;&middot;&nbsp; Tasten 1 / 2 / 3 / 4 &nbsp;&middot;&nbsp; Esc zum Schliessen</p>
+        <p class="sub">Waehle eine Option &nbsp;&middot;&nbsp; Tasten 1 - 5 &nbsp;&middot;&nbsp; Esc zum Schliessen</p>
 
         <div class="buttons">
             <div class="btn start" onclick="doStart()">
@@ -206,9 +231,18 @@
                 <div class="icon">&#9632;</div>
                 <div class="txt">
                     <div class="label">Stop</div>
-                    <div class="desc">haelt copydata.py an</div>
+                    <div class="desc">sanft &ndash; haelt nach der aktuellen Mappe an</div>
                 </div>
                 <div class="key">4</div>
+            </div>
+
+            <div class="btn kill" onclick="doForceStop()">
+                <div class="icon">&#10005;</div>
+                <div class="txt">
+                    <div class="label">Stop erzwingen</div>
+                    <div class="desc">hart &ndash; beendet copyData.py sofort</div>
+                </div>
+                <div class="key">5</div>
             </div>
         </div>
 

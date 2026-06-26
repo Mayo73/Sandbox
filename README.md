@@ -20,16 +20,17 @@ Eine moderne, anklickbare Oberflaeche auf HTML/CSS-Basis mit vier Buttons:
 2. **Ueberspringen und Fortsetzen** – ueberspringe letzte Mappe und setze fort
 3. **Fortsetzen** – ohne zu ueberspringen
 4. **Stop** – haelt `copyData.py` **sanft** an (sauber nach der aktuellen Mappe)
+5. **Stop erzwingen** – beendet `copyData.py` **sofort/hart** (Notbremse)
 
 Bedienung:
 1. `ui.hta` per Doppelklick starten (oeffnet sich mit `mshta.exe`).
-2. Button anklicken – oder die Tasten **1** / **2** / **3** / **4** druecken.
+2. Button anklicken – oder die Tasten **1** bis **5** druecken.
 3. Start/Skip/Fortsetzen oeffnen ihre Batch-Datei in einem **separaten Fenster**.
 4. **Esc** schliesst die Oberflaeche.
 
 Die zugeordneten Namen stehen oben in `ui.hta` im **CONFIG**-Block
-(`FILE_START`, `FILE_SKIP`, `FILE_RESUME`, `STOP_FLAG`) und koennen dort
-angepasst werden.
+(`FILE_START`, `FILE_SKIP`, `FILE_RESUME`, `STOP_FLAG`, `KILL_TARGET`) und
+koennen dort angepasst werden.
 
 **Sanftes Beenden (Stop):** Der Stop-Button erzeugt eine Datei `STOP.flag` im
 Skriptverzeichnis. `copyData.py` prueft zu Beginn jeder Schleife (also zwischen
@@ -37,6 +38,12 @@ zwei Mappen), ob diese Datei existiert, beendet sich dann kontrolliert und
 entfernt das Flag wieder. Die aktuell laufende Mappe wird **nie mittendrin**
 abgebrochen, daher kann **Fortsetzen** danach korrekt weitermachen.
 Voraussetzung: `ui.hta` liegt im selben Ordner wie `copyData.py`.
+
+**Hartes Beenden (Stop erzwingen):** Notbremse, wenn das Skript nicht reagiert.
+Sucht den Prozess, dessen Kommandozeile `KILL_TARGET` (Standard: `copyData.py`)
+enthaelt, und beendet ihn sofort mit `Stop-Process -Force`. Eine Sicherheits-
+abfrage muss bestaetigt werden. Achtung: die aktuelle Mappe kann dabei mitten
+im Vorgang abgebrochen werden.
 
 Hinweis: Eine reine `.html`-Datei im Browser darf aus Sicherheitsgruenden keine
 Batch-Dateien starten. Die `.hta` (HTML Application) ist daher noetig – sie ist
