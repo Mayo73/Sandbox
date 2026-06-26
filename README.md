@@ -14,20 +14,23 @@ Eine Steuerung mit drei Aktionen, wahlweise als Batch-Menue oder als HTML-Oberfl
 - `continue.bat`  – Option **Fortsetzen** (ohne zu ueberspringen)
 
 ### HTML-Oberflaeche (ui.hta)
-Eine moderne, anklickbare Oberflaeche auf HTML/CSS-Basis mit drei Buttons:
+Eine moderne, anklickbare Oberflaeche auf HTML/CSS-Basis mit vier Buttons:
 
 1. **Start** – startet den Vorgang neu
 2. **Ueberspringen und Fortsetzen** – ueberspringe letzte Mappe und setze fort
 3. **Fortsetzen** – ohne zu ueberspringen
+4. **Stop** – beendet das laufende Python-Skript (`copydata.py`)
 
 Bedienung:
 1. `ui.hta` per Doppelklick starten (oeffnet sich mit `mshta.exe`).
-2. Button anklicken – oder die Tasten **1** / **2** / **3** druecken.
-3. Die jeweilige Batch-Datei oeffnet sich in einem **separaten Fenster**.
+2. Button anklicken – oder die Tasten **1** / **2** / **3** / **4** druecken.
+3. Start/Skip/Fortsetzen oeffnen ihre Batch-Datei in einem **separaten Fenster**.
 4. **Esc** schliesst die Oberflaeche.
 
-Die zugeordneten Dateinamen stehen oben in `ui.hta` im **CONFIG**-Block
-(`FILE_START`, `FILE_SKIP`, `FILE_RESUME`) und koennen dort angepasst werden.
+Die zugeordneten Namen stehen oben in `ui.hta` im **CONFIG**-Block
+(`FILE_START`, `FILE_SKIP`, `FILE_RESUME`, `STOP_TARGET`) und koennen dort
+angepasst werden. **Stop** sucht den Prozess, dessen Kommandozeile `STOP_TARGET`
+(Standard: `copydata.py`) enthaelt, und beendet gezielt nur diesen.
 
 Hinweis: Eine reine `.html`-Datei im Browser darf aus Sicherheitsgruenden keine
 Batch-Dateien starten. Die `.hta` (HTML Application) ist daher noetig – sie ist
