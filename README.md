@@ -2,20 +2,46 @@
 
 Temporary files
 
-## Batch-Steuerung (Start / Fortsetzen)
+## AUTO LV 2.0
 
-Eine kleine Batch-Oberflaeche mit zwei Funktionen.
+Eine Steuerung mit drei Aktionen, wahlweise als Batch-Menue oder als HTML-Oberflaeche.
 
 ### Dateien
-- `menu.bat`   – Hauptmenue mit den Optionen **Start**, **Fortsetzen** und **Beenden**
-- `start.bat`  – wird von Option **Start** in einem eigenen Fenster geoeffnet
-- `resume.bat` – wird von Option **Fortsetzen** in einem eigenen Fenster geoeffnet
+- `ui.hta`        – grafische **HTML-Oberflaeche** (HTA) mit den drei Aktionen
+- `menu.bat`      – Hauptmenue (Pfeiltasten) mit allen Optionen + **Beenden**
+- `run.bat`       – Option **Start** (Vorgang neu starten)
+- `skip.bat`      – Option **Ueberspringen und Fortsetzen**
+- `continue.bat`  – Option **Fortsetzen** (ohne zu ueberspringen)
+
+### HTML-Oberflaeche (ui.hta)
+Eine moderne, anklickbare Oberflaeche auf HTML/CSS-Basis mit drei Buttons:
+
+1. **Start** – startet den Vorgang neu
+2. **Ueberspringen und Fortsetzen** – ueberspringe letzte Mappe und setze fort
+3. **Fortsetzen** – ohne zu ueberspringen
+
+Bedienung:
+1. `ui.hta` per Doppelklick starten (oeffnet sich mit `mshta.exe`).
+2. Button anklicken – oder die Tasten **1** / **2** / **3** druecken.
+3. Die jeweilige Batch-Datei oeffnet sich in einem **separaten Fenster**.
+4. **Esc** schliesst die Oberflaeche.
+
+Die zugeordneten Dateinamen stehen oben in `ui.hta` im **CONFIG**-Block
+(`FILE_START`, `FILE_SKIP`, `FILE_RESUME`) und koennen dort angepasst werden.
+
+Hinweis: Eine reine `.html`-Datei im Browser darf aus Sicherheitsgruenden keine
+Batch-Dateien starten. Die `.hta` (HTML Application) ist daher noetig – sie ist
+unter Windows ohne Zusatzsoftware lauffaehig.
 
 ### Verwendung
 1. `menu.bat` per Doppelklick starten.
-2. Im Menue `1` (Start) oder `2` (Fortsetzen) waehlen und mit Enter bestaetigen.
+2. Mit den **Pfeiltasten Hoch/Runter** den Eintrag waehlen (gruener Cursor),
+   mit **Enter** bestaetigen.
 3. Die jeweilige Batch-Datei oeffnet sich in einem **separaten Fenster**; das Menue bleibt geoeffnet.
-4. Mit `0` wird das Menue beendet.
+4. Eintrag **Beenden** schliesst das Menue.
 
-Die eigentliche Logik kannst du in `start.bat` bzw. `resume.bat` an den
-markierten Stellen eintragen.
+Darstellung: weisse Schrift mit gruenem Auswahl-Cursor (ANSI-Farben,
+funktioniert in cmd unter Windows 10/11).
+
+Die eigentliche Logik kannst du in `run.bat`, `skip.bat` bzw. `continue.bat`
+an den markierten Stellen eintragen.
