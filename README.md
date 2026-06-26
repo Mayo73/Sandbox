@@ -7,9 +7,22 @@ Temporary files
 Eine kleine Batch-Oberflaeche mit zwei Funktionen.
 
 ### Dateien
+- `ui.hta`     – grafische **HTML-Oberflaeche** (HTA) mit Buttons **Start** und **Fortsetzen**
 - `menu.bat`   – Hauptmenue mit den Optionen **Start**, **Fortsetzen** und **Beenden**
 - `start.bat`  – wird von Option **Start** in einem eigenen Fenster geoeffnet
 - `resume.bat` – wird von Option **Fortsetzen** in einem eigenen Fenster geoeffnet
+
+### HTML-Oberflaeche (ui.hta)
+Eine moderne, anklickbare Oberflaeche auf HTML/CSS-Basis.
+
+1. `ui.hta` per Doppelklick starten (oeffnet sich mit `mshta.exe`).
+2. Auf **Start** oder **Fortsetzen** klicken – oder die Tasten **1** / **2** druecken.
+3. Die jeweilige Batch-Datei oeffnet sich in einem **separaten Fenster**.
+4. **Esc** schliesst die Oberflaeche.
+
+Hinweis: Eine reine `.html`-Datei im Browser darf aus Sicherheitsgruenden keine
+Batch-Dateien starten. Die `.hta` (HTML Application) ist daher noetig – sie ist
+unter Windows ohne Zusatzsoftware lauffaehig.
 
 ### Verwendung
 1. `menu.bat` per Doppelklick starten.
