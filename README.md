@@ -7,18 +7,27 @@ Temporary files
 Eine kleine Batch-Oberflaeche mit zwei Funktionen.
 
 ### Dateien
-- `ui.hta`     – grafische **HTML-Oberflaeche** (HTA) mit Buttons **Start** und **Fortsetzen**
-- `menu.bat`   – Hauptmenue mit den Optionen **Start**, **Fortsetzen** und **Beenden**
-- `start.bat`  – wird von Option **Start** in einem eigenen Fenster geoeffnet
-- `resume.bat` – wird von Option **Fortsetzen** in einem eigenen Fenster geoeffnet
+- `ui.hta`           – grafische **HTML-Oberflaeche** (HTA) mit den drei Aktionen
+- `menu.bat`         – Hauptmenue mit den Optionen **Start**, **Fortsetzen** und **Beenden**
+- `start.bat`        – Option **Start** (Vorgang neu starten)
+- `skip-resume.bat`  – Option **Ueberspringen und Fortsetzen**
+- `resume.bat`       – Option **Fortsetzen** (ohne zu ueberspringen)
 
 ### HTML-Oberflaeche (ui.hta)
-Eine moderne, anklickbare Oberflaeche auf HTML/CSS-Basis.
+Eine moderne, anklickbare Oberflaeche auf HTML/CSS-Basis mit drei Buttons:
 
+1. **Start** – startet den Vorgang neu
+2. **Ueberspringen und Fortsetzen** – ueberspringe letzte Mappe und setze fort
+3. **Fortsetzen** – ohne zu ueberspringen
+
+Bedienung:
 1. `ui.hta` per Doppelklick starten (oeffnet sich mit `mshta.exe`).
-2. Auf **Start** oder **Fortsetzen** klicken – oder die Tasten **1** / **2** druecken.
+2. Button anklicken – oder die Tasten **1** / **2** / **3** druecken.
 3. Die jeweilige Batch-Datei oeffnet sich in einem **separaten Fenster**.
 4. **Esc** schliesst die Oberflaeche.
+
+Die zugeordneten Dateinamen stehen oben in `ui.hta` im **CONFIG**-Block
+(`FILE_START`, `FILE_SKIP`, `FILE_RESUME`) und koennen dort angepasst werden.
 
 Hinweis: Eine reine `.html`-Datei im Browser darf aus Sicherheitsgruenden keine
 Batch-Dateien starten. Die `.hta` (HTML Application) ist daher noetig – sie ist

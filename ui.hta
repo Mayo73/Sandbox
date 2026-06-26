@@ -2,11 +2,11 @@
 <html>
 <head>
 <meta charset="utf-8">
-<title>Batch Steuerung</title>
+<title>AUTO LV 2.0</title>
 <!-- HTA: laeuft mit mshta.exe und darf Batch-Dateien starten -->
 <hta:application
     id="BatchUI"
-    applicationname="BatchSteuerung"
+    applicationname="AutoLV"
     border="thin"
     borderstyle="normal"
     caption="yes"
@@ -33,69 +33,82 @@
         display: flex;
         flex-direction: column;
         align-items: center;
-        justify-content: center;
         height: 100%;
-        padding: 24px;
+        padding: 26px 26px 18px;
         box-sizing: border-box;
     }
     h1 {
         margin: 0 0 4px;
         font-size: 26px;
-        letter-spacing: 4px;
+        letter-spacing: 6px;
         font-weight: 600;
     }
     .sub {
-        margin: 0 0 32px;
+        margin: 0 0 26px;
         color: #767676;
-        font-size: 13px;
+        font-size: 12px;
         letter-spacing: 1px;
     }
     .buttons {
         display: flex;
-        gap: 22px;
-        flex-wrap: wrap;
-        justify-content: center;
+        flex-direction: column;
+        gap: 14px;
+        width: 100%;
+        max-width: 460px;
     }
     .btn {
-        width: 200px;
-        padding: 22px 18px;
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        padding: 16px 18px;
         border-radius: 12px;
         border: 1px solid #2a2a2a;
         background: #161616;
         color: #f2f2f2;
-        text-align: center;
         cursor: pointer;
         transition: all .15s ease;
     }
     .btn:hover {
-        border-color: #16c60c;
         background: #1c1c1c;
         transform: translateY(-2px);
-        box-shadow: 0 6px 18px rgba(22,198,12,.18);
     }
     .btn:active { transform: translateY(0); }
-    .btn .icon { font-size: 34px; line-height: 1; }
-    .btn .label {
-        margin-top: 12px;
-        font-size: 18px;
-        font-weight: 600;
-        letter-spacing: 1px;
-    }
-    .btn .desc {
-        margin-top: 6px;
+    .btn .icon { font-size: 26px; line-height: 1; width: 34px; text-align: center; }
+    .btn .txt { text-align: left; }
+    .btn .label { font-size: 17px; font-weight: 600; letter-spacing: .5px; }
+    .btn .desc { margin-top: 3px; font-size: 12px; color: #9a9a9a; }
+    .btn .key {
+        margin-left: auto;
         font-size: 12px;
-        color: #9a9a9a;
+        color: #6a6a6a;
+        border: 1px solid #333;
+        border-radius: 6px;
+        padding: 2px 8px;
     }
-    .btn.start:hover  { border-color: #16c60c; box-shadow: 0 6px 18px rgba(22,198,12,.22); }
-    .btn.resume:hover { border-color: #e5b700; box-shadow: 0 6px 18px rgba(229,183,0,.22); }
+    /* Akzentfarben pro Aktion */
+    .btn.start  .icon { color: #16c60c; }
+    .btn.skip   .icon { color: #3b9eff; }
+    .btn.resume .icon { color: #e5b700; }
+    .btn.start:hover  { border-color: #16c60c; box-shadow: 0 6px 18px rgba(22,198,12,.20); }
+    .btn.skip:hover   { border-color: #3b9eff; box-shadow: 0 6px 18px rgba(59,158,255,.20); }
+    .btn.resume:hover { border-color: #e5b700; box-shadow: 0 6px 18px rgba(229,183,0,.20); }
     .footer {
-        margin-top: 34px;
+        margin-top: auto;
+        padding-top: 16px;
         font-size: 11px;
         color: #555;
         letter-spacing: 1px;
     }
 </style>
 <script type="text/javascript">
+    /* =========================================================
+       CONFIG  -  hier die echten Batch-Dateinamen eintragen
+       ========================================================= */
+    var FILE_START  = "start.bat";        // Start
+    var FILE_SKIP   = "skip-resume.bat";  // Ueberspringen und Fortsetzen
+    var FILE_RESUME = "resume.bat";       // Fortsetzen (ohne Ueberspringen)
+    /* ========================================================= */
+
     // Verzeichnis dieser HTA ermitteln (damit die Batch-Dateien gefunden werden)
     function baseDir() {
         var full = decodeURIComponent(location.pathname).replace(/^\//, "").replace(/\//g, "\\");
@@ -115,39 +128,55 @@
         shell.Run('cmd /k "' + path + '"', 1, false);
     }
 
-    function startBatch()  { run("start.bat"); }
-    function resumeBatch() { run("resume.bat"); }
+    function doStart()  { run(FILE_START);  }
+    function doSkip()   { run(FILE_SKIP);   }
+    function doResume() { run(FILE_RESUME); }
 
-    // Fenstergroesse setzen
     window.onload = function () {
-        try { window.resizeTo(560, 420); } catch (e) {}
+        try { window.resizeTo(560, 470); } catch (e) {}
     };
 
-    // Tastatur: 1 = Start, 2 = Fortsetzen, Esc = schliessen
+    // Tastatur: 1 = Start, 2 = Ueberspringen+Fortsetzen, 3 = Fortsetzen, Esc = schliessen
     document.onkeydown = function () {
         var k = window.event.keyCode;
-        if (k === 49) startBatch();        // 1
-        else if (k === 50) resumeBatch();  // 2
+        if (k === 49) doStart();           // 1
+        else if (k === 50) doSkip();       // 2
+        else if (k === 51) doResume();     // 3
         else if (k === 27) window.close(); // Esc
     };
 </script>
 </head>
 <body>
     <div class="wrap">
-        <h1>BATCH STEUERUNG</h1>
-        <p class="sub">Waehle eine Option &nbsp;&middot;&nbsp; Tasten 1 / 2 &nbsp;&middot;&nbsp; Esc zum Schliessen</p>
+        <h1>AUTO LV 2.0</h1>
+        <p class="sub">Waehle eine Option &nbsp;&middot;&nbsp; Tasten 1 / 2 / 3 &nbsp;&middot;&nbsp; Esc zum Schliessen</p>
 
         <div class="buttons">
-            <div class="btn start" onclick="startBatch()">
+            <div class="btn start" onclick="doStart()">
                 <div class="icon">&#9654;</div>
-                <div class="label">Start</div>
-                <div class="desc">startet den Vorgang neu</div>
+                <div class="txt">
+                    <div class="label">Start</div>
+                    <div class="desc">startet den Vorgang neu</div>
+                </div>
+                <div class="key">1</div>
             </div>
 
-            <div class="btn resume" onclick="resumeBatch()">
+            <div class="btn skip" onclick="doSkip()">
+                <div class="icon">&#9197;</div>
+                <div class="txt">
+                    <div class="label">Ueberspringen und Fortsetzen</div>
+                    <div class="desc">ueberspringe letzte Mappe und setze den Vorgang fort</div>
+                </div>
+                <div class="key">2</div>
+            </div>
+
+            <div class="btn resume" onclick="doResume()">
                 <div class="icon">&#10227;</div>
-                <div class="label">Fortsetzen</div>
-                <div class="desc">setzt den Vorgang fort</div>
+                <div class="txt">
+                    <div class="label">Fortsetzen</div>
+                    <div class="desc">ohne zu ueberspringen</div>
+                </div>
+                <div class="key">3</div>
             </div>
         </div>
 
