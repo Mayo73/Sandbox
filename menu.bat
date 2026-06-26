@@ -1,6 +1,6 @@
 @echo off
 setlocal EnableExtensions EnableDelayedExpansion
-title Batch Steuerung - Hauptmenue
+title AUTO LV 2.0 - Hauptmenue
 
 :: ============================================================
 ::  Verzeichnis dieser Datei (damit es von ueberall startet)
@@ -20,7 +20,7 @@ set "RESET=%ESC%[0m"
 color 0F
 
 set "sel=0"
-set "count=3"
+set "count=4"
 
 :: ============================================================
 ::  Menue zeichnen
@@ -29,14 +29,15 @@ set "count=3"
 cls
 echo(
 echo   %WHITE%============================================================%RESET%
-echo   %WHITE%==              B A T C H   S T E U E R U N G             ==%RESET%
+echo   %WHITE%==                    A U T O   L V   2 . 0              ==%RESET%
 echo   %WHITE%============================================================%RESET%
 echo(
 echo   %GRAY%Pfeiltasten Hoch/Runter zum Waehlen  -  Enter zum Bestaetigen%RESET%
 echo(
-call :line 0 "Start        -  startet den Vorgang neu"
-call :line 1 "Fortsetzen   -  setzt den Vorgang fort"
-call :line 2 "Beenden"
+call :line 0 "Start                          -  startet den Vorgang neu"
+call :line 1 "Ueberspringen und Fortsetzen   -  ueberspringe letzte Mappe und setze fort"
+call :line 2 "Fortsetzen                     -  ohne zu Ueberspringen"
+call :line 3 "Beenden"
 echo(
 
 :: ---- Taste einlesen (U=Hoch, D=Runter, E=Enter) ----
@@ -61,38 +62,54 @@ goto :eof
 :: ============================================================
 :select
 if "!sel!"=="0" goto start
-if "!sel!"=="1" goto resume
-if "!sel!"=="2" goto ende
+if "!sel!"=="1" goto skip
+if "!sel!"=="2" goto resume
+if "!sel!"=="3" goto ende
 goto draw
 
 :: ============================================================
-::  Option 1 - Start (oeffnet start.bat in neuem Fenster)
+::  Option 1 - Start (oeffnet run.bat in neuem Fenster)
 :: ============================================================
 :start
-if not exist "%BASE%start.bat" (
+if not exist "%BASE%run.bat" (
     cls
     echo(
-    echo   %WHITE%[!] Datei nicht gefunden: %BASE%start.bat%RESET%
+    echo   %WHITE%[!] Datei nicht gefunden: %BASE%run.bat%RESET%
     echo(
     pause
     goto draw
 )
-start "Start" cmd /k "%BASE%start.bat"
+start "Start" cmd /k "%BASE%run.bat"
 goto draw
 
 :: ============================================================
-::  Option 2 - Fortsetzen (oeffnet resume.bat in neuem Fenster)
+::  Option 2 - Ueberspringen und Fortsetzen (oeffnet skip.bat)
 :: ============================================================
-:resume
-if not exist "%BASE%resume.bat" (
+:skip
+if not exist "%BASE%skip.bat" (
     cls
     echo(
-    echo   %WHITE%[!] Datei nicht gefunden: %BASE%resume.bat%RESET%
+    echo   %WHITE%[!] Datei nicht gefunden: %BASE%skip.bat%RESET%
     echo(
     pause
     goto draw
 )
-start "Fortsetzen" cmd /k "%BASE%resume.bat"
+start "Ueberspringen und Fortsetzen" cmd /k "%BASE%skip.bat"
+goto draw
+
+:: ============================================================
+::  Option 3 - Fortsetzen (oeffnet continue.bat in neuem Fenster)
+:: ============================================================
+:resume
+if not exist "%BASE%continue.bat" (
+    cls
+    echo(
+    echo   %WHITE%[!] Datei nicht gefunden: %BASE%continue.bat%RESET%
+    echo(
+    pause
+    goto draw
+)
+start "Fortsetzen" cmd /k "%BASE%continue.bat"
 goto draw
 
 :: ============================================================

@@ -2,16 +2,16 @@
 
 Temporary files
 
-## Batch-Steuerung (Start / Fortsetzen)
+## AUTO LV 2.0
 
-Eine kleine Batch-Oberflaeche mit zwei Funktionen.
+Eine Steuerung mit drei Aktionen, wahlweise als Batch-Menue oder als HTML-Oberflaeche.
 
 ### Dateien
-- `ui.hta`           – grafische **HTML-Oberflaeche** (HTA) mit den drei Aktionen
-- `menu.bat`         – Hauptmenue mit den Optionen **Start**, **Fortsetzen** und **Beenden**
-- `start.bat`        – Option **Start** (Vorgang neu starten)
-- `skip-resume.bat`  – Option **Ueberspringen und Fortsetzen**
-- `resume.bat`       – Option **Fortsetzen** (ohne zu ueberspringen)
+- `ui.hta`        – grafische **HTML-Oberflaeche** (HTA) mit den drei Aktionen
+- `menu.bat`      – Hauptmenue (Pfeiltasten) mit allen Optionen + **Beenden**
+- `run.bat`       – Option **Start** (Vorgang neu starten)
+- `skip.bat`      – Option **Ueberspringen und Fortsetzen**
+- `continue.bat`  – Option **Fortsetzen** (ohne zu ueberspringen)
 
 ### HTML-Oberflaeche (ui.hta)
 Eine moderne, anklickbare Oberflaeche auf HTML/CSS-Basis mit drei Buttons:
@@ -43,5 +43,5 @@ unter Windows ohne Zusatzsoftware lauffaehig.
 Darstellung: weisse Schrift mit gruenem Auswahl-Cursor (ANSI-Farben,
 funktioniert in cmd unter Windows 10/11).
 
-Die eigentliche Logik kannst du in `start.bat` bzw. `resume.bat` an den
-markierten Stellen eintragen.
+Die eigentliche Logik kannst du in `run.bat`, `skip.bat` bzw. `continue.bat`
+an den markierten Stellen eintragen.
