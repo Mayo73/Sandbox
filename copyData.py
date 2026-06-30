@@ -14,6 +14,20 @@ warnings.filterwarnings(
     category=UserWarning,
 )
 
+# "Exception ignored ... ZipFile.__del__ ... I/O operation on closed file" unterdrücken.
+# Diese Meldung stammt aus dem Aufräumen (Garbage Collection) von openpyxl-Workbooks,
+# die mit read_only=True geladen wurden, und ist harmlos. Es wird gezielt NUR diese
+# eine Meldung geschluckt; alle anderen unerwarteten Fehler bleiben sichtbar.
+_default_unraisablehook = sys.unraisablehook
+
+def _quiet_unraisablehook(unraisable):
+    hook_obj = repr(getattr(unraisable, "object", ""))
+    if isinstance(unraisable.exc_value, ValueError) and "ZipFile" in hook_obj:
+        return  # ZIP-Aufräummeldung ignorieren
+    _default_unraisablehook(unraisable)
+
+sys.unraisablehook = _quiet_unraisablehook
+
 # Erzeugung des logs-Verzeichnisses, falls es nicht existiert
 script_dir = os.path.dirname(os.path.abspath(__file__))
 log_dir = Path(script_dir).parent / "logs"
