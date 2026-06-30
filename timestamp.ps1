@@ -14,7 +14,12 @@ $excel.DisplayAlerts = $false
 $excel.AskToUpdateLinks = $false # Wichtig um Aktualisierungsmeldung zu unterdrücken
 
 try {
-    $workbook = $excel.Workbooks.Open($filePath, 3, $true) # , 3, $true - Um automatisch zu aktualisieren, falls Meldung doch kommt
+    # Open(Filename, UpdateLinks=3, ReadOnly=$false):
+    # ReadOnly MUSS $false sein, sonst kann $workbook.Save() nicht in die Datei
+    # zurueckschreiben und wird intern zu einem SaveAs -> "Datei bereits
+    # vorhanden, ersetzen?"-Dialog. Mit $false schreibt Save() direkt in die
+    # gleiche Datei, ohne Dialog und ohne Ersetzen.
+    $workbook = $excel.Workbooks.Open($filePath, 3, $false)
     $sheet = $workbook.Sheets.Item("Leistungsnachweis")
 
     $range = $sheet.Range("A$pasteRange")
