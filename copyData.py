@@ -21,9 +21,15 @@ warnings.filterwarnings(
 _default_unraisablehook = sys.unraisablehook
 
 def _quiet_unraisablehook(unraisable):
-    hook_obj = repr(getattr(unraisable, "object", ""))
-    if isinstance(unraisable.exc_value, ValueError) and "ZipFile" in hook_obj:
-        return  # ZIP-Aufräummeldung ignorieren
+    # Erkennung ueber Objekt-Repr UND Traceback, damit es versionsunabhaengig
+    # (auch bei Aufraeumen waehrend des Interpreter-Shutdowns) greift.
+    if "zipfile" in repr(getattr(unraisable, "object", "")).lower():
+        return
+    tb = getattr(unraisable, "exc_traceback", None)
+    while tb is not None:
+        if "zipfile" in tb.tb_frame.f_code.co_filename.lower():
+            return  # Fehler stammt aus dem zipfile-Modul -> harmlose Aufraeummeldung
+        tb = tb.tb_next
     _default_unraisablehook(unraisable)
 
 sys.unraisablehook = _quiet_unraisablehook
@@ -127,6 +133,7 @@ while True:
     if "Leistungsnachweis" not in workbook.sheetnames:
         #raise ValueError("Das Arbeitsblatt 'Leistungsnachweis' wurde in der Excel-Datei nicht gefunden.")
         write_log("!!!!!!!!!!!!!!!!!!Das Arbeitsblatt 'Leistungsnachweis' wurde in der Excel-Datei nicht gefunden.")
+        workbook.close()  # read_only-Workbook schliessen, sonst ZipFile-Aufraeummeldung
         delete_line_from_paths_file()
         continue
     worksheet = workbook["Leistungsnachweis"]
@@ -142,6 +149,7 @@ while True:
     if first_value_row is None:
         #raise ValueError("Es wurde keine Zeile mit einem Wert in Spalte A ab Zeile 11 gefunden.")
         write_log("!!!!!!!!!!!!!!!!!!Es wurde keine Zeile mit einem Wert in Spalte A ab Zeile 11 gefunden.")
+        workbook.close()  # read_only-Workbook schliessen, sonst ZipFile-Aufraeummeldung
         delete_line_from_paths_file()
         continue
 
@@ -155,6 +163,7 @@ while True:
     if gezogen_am_row is None:
         #raise ValueError("Es wurde keine Zeile gefunden, die 'gezogen am' in Spalte A enthält.")
         write_log("!!!!!!!!!!!!!!!!!!Es wurde keine Zeile gefunden, die 'gezogen am' in Spalte A enthält.")
+        workbook.close()  # read_only-Workbook schliessen, sonst ZipFile-Aufraeummeldung
         delete_line_from_paths_file()
         continue
 
