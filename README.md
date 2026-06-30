@@ -19,11 +19,19 @@ wahlweise als Batch-Menue, HTML-Oberflaeche oder Python-Oberflaeche.
 Gleiche fuenf Aktionen wie die HTA, als native Tkinter-Oberflaeche
 (Tkinter ist Teil der Python-Standardbibliothek – keine Installation noetig).
 
+Die Batch-Dateien laufen hier **ohne externes Terminalfenster** – ihre Ausgabe
+erscheint live im **eingebauten Konsolen-Panel** rechts in der GUI.
+
 1. Per Doppelklick oder `python ui.py` starten.
 2. Button anklicken – oder die Tasten **1** bis **5** druecken, **Esc** schliesst.
-3. Start/Ueberspringen/Fortsetzen oeffnen ihre Batch-Datei in einem
-   **separaten Fenster**; **Stop** schreibt `STOP.flag`, **Stop erzwingen** killt
-   den `copyData.py`-Prozess.
+3. Start/Ueberspringen/Fortsetzen starten ihre Batch-Datei eingebettet (Ausgabe
+   im Panel rechts); **Stop** schreibt `STOP.flag`, **Stop erzwingen** killt den
+   `copyData.py`-Prozess. **Leeren** loescht die Konsole.
+
+Technik: Die Batch wird mit `subprocess.Popen` und `CREATE_NO_WINDOW` gestartet
+(kein Konsolenfenster). Die Ausgabe wird in einem Hintergrund-Thread gelesen und
+ueber eine Queue thread-sicher in das Text-Widget geschrieben – so bleibt die
+GUI bedienbar. Es laeuft jeweils ein Vorgang gleichzeitig.
 
 Die Dateinamen stehen oben in `ui.py` im **CONFIG**-Block und koennen dort
 angepasst werden. Voraussetzung: `ui.py` liegt im selben Ordner wie `copyData.py`.
