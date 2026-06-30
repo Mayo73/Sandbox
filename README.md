@@ -4,14 +4,29 @@ Temporary files
 
 ## AUTO LV 2.0
 
-Eine Steuerung mit drei Aktionen, wahlweise als Batch-Menue oder als HTML-Oberflaeche.
+Eine Steuerung mit den Aktionen Start, Ueberspringen, Fortsetzen und Stop,
+wahlweise als Batch-Menue, HTML-Oberflaeche oder Python-Oberflaeche.
 
 ### Dateien
-- `ui.hta`        – grafische **HTML-Oberflaeche** (HTA) mit den drei Aktionen
+- `ui.py`         – grafische **Python-Oberflaeche** (Tkinter), keine Zusatzpakete
+- `ui.hta`        – grafische **HTML-Oberflaeche** (HTA) mit denselben Aktionen
 - `menu.bat`      – Hauptmenue (Pfeiltasten) mit allen Optionen + **Beenden**
 - `run.bat`       – Option **Start** (Vorgang neu starten)
 - `skip.bat`      – Option **Ueberspringen und Fortsetzen**
 - `continue.bat`  – Option **Fortsetzen** (ohne zu ueberspringen)
+
+### Python-Oberflaeche (ui.py)
+Gleiche fuenf Aktionen wie die HTA, als native Tkinter-Oberflaeche
+(Tkinter ist Teil der Python-Standardbibliothek – keine Installation noetig).
+
+1. Per Doppelklick oder `python ui.py` starten.
+2. Button anklicken – oder die Tasten **1** bis **5** druecken, **Esc** schliesst.
+3. Start/Ueberspringen/Fortsetzen oeffnen ihre Batch-Datei in einem
+   **separaten Fenster**; **Stop** schreibt `STOP.flag`, **Stop erzwingen** killt
+   den `copyData.py`-Prozess.
+
+Die Dateinamen stehen oben in `ui.py` im **CONFIG**-Block und koennen dort
+angepasst werden. Voraussetzung: `ui.py` liegt im selben Ordner wie `copyData.py`.
 
 ### HTML-Oberflaeche (ui.hta)
 Eine moderne, anklickbare Oberflaeche auf HTML/CSS-Basis mit vier Buttons:
