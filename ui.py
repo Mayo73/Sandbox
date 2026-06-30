@@ -211,18 +211,26 @@ class App:
 
         def worker():
             try:
+                # PYTHONUNBUFFERED=1 -> copyData.py flusht seine Ausgabe sofort,
+                # statt sie zu puffern (sonst erscheint im Panel lange nichts,
+                # obwohl das Skript laeuft).
+                env = os.environ.copy()
+                env["PYTHONUNBUFFERED"] = "1"
                 if os.name == "nt":
                     self.proc = subprocess.Popen(
                         ["cmd", "/c", path],
                         stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
-                        creationflags=CREATE_NO_WINDOW, cwd=BASE,
+                        creationflags=CREATE_NO_WINDOW, cwd=BASE, env=env, bufsize=0,
                     )
                 else:
                     self.proc = subprocess.Popen(
                         ["bash", path],
                         stdout=subprocess.PIPE, stderr=subprocess.STDOUT, cwd=BASE,
+                        env=env, bufsize=0,
                     )
-                for raw in self.proc.stdout:
+                # readline-Schleife statt "for line in ..." -> keine ~8 KB
+                # Read-Ahead-Pufferung, Zeilen erscheinen sofort.
+                for raw in iter(self.proc.stdout.readline, b""):
                     self.out_q.put(raw.decode(OUTPUT_ENCODING, errors="replace"))
                 self.proc.wait()
                 self.out_q.put("\n[Vorgang beendet, Exit-Code %s]\n"

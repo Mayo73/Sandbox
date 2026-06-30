@@ -29,9 +29,11 @@ erscheint live im **eingebauten Konsolen-Panel** rechts in der GUI.
    `copyData.py`-Prozess. **Leeren** loescht die Konsole.
 
 Technik: Die Batch wird mit `subprocess.Popen` und `CREATE_NO_WINDOW` gestartet
-(kein Konsolenfenster). Die Ausgabe wird in einem Hintergrund-Thread gelesen und
-ueber eine Queue thread-sicher in das Text-Widget geschrieben – so bleibt die
-GUI bedienbar. Es laeuft jeweils ein Vorgang gleichzeitig.
+(kein Konsolenfenster). Die Ausgabe wird in einem Hintergrund-Thread per
+`readline` gelesen und ueber eine Queue thread-sicher in das Text-Widget
+geschrieben – so bleibt die GUI bedienbar. Damit `copyData.py` seine Ausgabe
+**sofort** (statt blockweise gepuffert) liefert, wird der Prozess mit
+`PYTHONUNBUFFERED=1` gestartet. Es laeuft jeweils ein Vorgang gleichzeitig.
 
 Die Dateinamen stehen oben in `ui.py` im **CONFIG**-Block und koennen dort
 angepasst werden. Voraussetzung: `ui.py` liegt im selben Ordner wie `copyData.py`.
