@@ -39,10 +39,13 @@ Die Dateinamen stehen oben in `ui.py` im **CONFIG**-Block und koennen dort
 angepasst werden. Voraussetzung: `ui.py` liegt im selben Ordner wie `copyData.py`.
 
 **Logging:** `ui.py` uebernimmt die `write_log`-Funktion aus `copyData.py`
-(gleicher `logs`-Ordner, gleiches Zeitstempel-Format) und schreibt beim
-Druecken von **Ueberspringen**, **Fortsetzen**, **Stop** und **Stop erzwingen**
-je einen eigenen Eintrag – sowohl in die Log-Datei (`logs/log_ui_<Zeit>.txt`)
-als auch in die eingebettete Konsole.
+(gleiches Zeitstempel-Format) und schreibt beim Druecken von **Ueberspringen**,
+**Fortsetzen**, **Stop** und **Stop erzwingen** je einen eigenen Eintrag. Die
+Eintraege landen in **derselben** Log-Datei des aktuellen Laufs (die neueste
+`logs/log_<Zeit>.txt`, die `copyData.py` erstellt hat) – es wird keine eigene
+Datei angelegt. Zusaetzlich erscheint jeder Eintrag in der eingebetteten
+Konsole. Existiert noch keine Log-Datei (vor dem ersten Start), wird der
+Eintrag nur in der Konsole angezeigt.
 
 ### HTML-Oberflaeche (ui.hta)
 Eine moderne, anklickbare Oberflaeche auf HTML/CSS-Basis mit vier Buttons:

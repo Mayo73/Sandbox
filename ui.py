@@ -32,11 +32,20 @@ BASE = os.path.dirname(os.path.abspath(__file__))
 
 # Log-Verzeichnis wie in copyData.py: <Eltern-Ordner>/logs
 LOG_DIR = Path(BASE).parent / "logs"
-try:
-    LOG_DIR.mkdir(parents=True, exist_ok=True)
-    LOG_FILE = LOG_DIR / f"log_ui_{datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}.txt"
-except Exception:
-    LOG_FILE = None  # ohne Log-Datei weiterlaufen, falls Ordner nicht anlegbar
+
+
+def current_log_file():
+    """Neueste vorhandene Log-Datei (von copyData.py erzeugt: log_<Zeit>.txt).
+    Die UI schreibt in diese Datei, statt eine eigene anzulegen. Gibt None
+    zurueck, wenn noch kein Lauf eine Log-Datei erstellt hat."""
+    try:
+        logs = [p for p in LOG_DIR.glob("log_*.txt")
+                if not p.name.startswith("log_ui_")]
+        if not logs:
+            return None
+        return max(logs, key=lambda p: p.stat().st_mtime)
+    except Exception:
+        return None
 
 # Windows-Flag: Hilfsprozesse ohne eigenes Konsolenfenster starten
 CREATE_NO_WINDOW = 0x08000000 if os.name == "nt" else 0
@@ -190,15 +199,20 @@ class App:
         self.console.configure(state="disabled")
 
     def write_log(self, message):
-        """Schreibt einen Zeitstempel-Eintrag in die Log-Datei (wie in
-        copyData.py) und zeigt ihn zusaetzlich in der eingebetteten Konsole."""
+        """Schreibt einen Zeitstempel-Eintrag in die aktuelle Log-Datei des
+        laufenden Vorgangs (von copyData.py erstellt) und zeigt ihn zusaetzlich
+        in der eingebetteten Konsole. Existiert noch keine Log-Datei, wird der
+        Eintrag nur in der Konsole angezeigt."""
         line = "%s - %s" % (datetime.now().strftime("%Y-%m-%d %H:%M:%S"), message)
-        if LOG_FILE is not None:
+        log_file = current_log_file()
+        if log_file is not None:
             try:
-                with open(LOG_FILE, "a", encoding="utf-8") as f:
+                with open(log_file, "a", encoding="utf-8") as f:
                     f.write(line + "\n")
             except Exception as exc:
                 line += "   [Log-Fehler: %s]" % exc
+        else:
+            line += "   [keine Log-Datei vorhanden - erst nach einem Start]"
         self.append(line + "\n")
 
     def clear_console(self):
