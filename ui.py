@@ -13,6 +13,8 @@ import queue
 import subprocess
 import threading
 import tkinter as tk
+from datetime import datetime
+from pathlib import Path
 from tkinter import messagebox
 
 # =========================================================
@@ -27,6 +29,14 @@ KILL_TARGET = "copyData.py"    # Stop erzwingen (hart): Prozess, der gekillt wir
 
 # Verzeichnis dieser Datei (damit Batch-Dateien/Flag gefunden werden)
 BASE = os.path.dirname(os.path.abspath(__file__))
+
+# Log-Verzeichnis wie in copyData.py: <Eltern-Ordner>/logs
+LOG_DIR = Path(BASE).parent / "logs"
+try:
+    LOG_DIR.mkdir(parents=True, exist_ok=True)
+    LOG_FILE = LOG_DIR / f"log_ui_{datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}.txt"
+except Exception:
+    LOG_FILE = None  # ohne Log-Datei weiterlaufen, falls Ordner nicht anlegbar
 
 # Windows-Flag: Hilfsprozesse ohne eigenes Konsolenfenster starten
 CREATE_NO_WINDOW = 0x08000000 if os.name == "nt" else 0
@@ -179,6 +189,18 @@ class App:
         self.console.see("end")
         self.console.configure(state="disabled")
 
+    def write_log(self, message):
+        """Schreibt einen Zeitstempel-Eintrag in die Log-Datei (wie in
+        copyData.py) und zeigt ihn zusaetzlich in der eingebetteten Konsole."""
+        line = "%s - %s" % (datetime.now().strftime("%Y-%m-%d %H:%M:%S"), message)
+        if LOG_FILE is not None:
+            try:
+                with open(LOG_FILE, "a", encoding="utf-8") as f:
+                    f.write(line + "\n")
+            except Exception as exc:
+                line += "   [Log-Fehler: %s]" % exc
+        self.append(line + "\n")
+
     def clear_console(self):
         self.console.configure(state="normal")
         self.console.delete("1.0", "end")
@@ -248,15 +270,18 @@ class App:
         self.run_batch(FILE_START)
 
     def do_skip(self):
+        self.write_log("Aktion 'Ueberspringen' - starte %s" % FILE_SKIP)
         self.run_batch(FILE_SKIP)
 
     def do_resume(self):
+        self.write_log("Aktion 'Fortsetzen' - starte %s" % FILE_RESUME)
         self.run_batch(FILE_RESUME)
 
     def do_stop(self):
         """Sanft: schreibt STOP.flag. copyData.py beendet sich nach der Mappe."""
         open(os.path.join(BASE, STOP_FLAG), "w").close()
-        self.append("\n[Stop angefordert - beendet sich nach der aktuellen Mappe]\n")
+        self.write_log("Aktion 'Stop' (sanft) - %s geschrieben, %s beendet sich "
+                       "nach der aktuellen Mappe" % (STOP_FLAG, KILL_TARGET))
 
     def do_force_stop(self):
         """Hart: killt copyData.py sofort (Notbremse)."""
@@ -264,11 +289,14 @@ class App:
             "Stop erzwingen",
             "%s wird SOFORT beendet - die aktuelle Mappe wird ggf. mittendrin "
             "abgebrochen.\n\nWirklich erzwingen?" % KILL_TARGET):
+            self.write_log("Aktion 'Stop erzwingen' - abgebrochen (nicht bestaetigt)")
             return
         if self.kill_process():
-            self.append("\n[%s wurde hart beendet]\n" % KILL_TARGET)
+            self.write_log("Aktion 'Stop erzwingen' (hart) - %s wurde beendet"
+                           % KILL_TARGET)
         else:
-            self.append("\n[Es laeuft kein %s]\n" % KILL_TARGET)
+            self.write_log("Aktion 'Stop erzwingen' (hart) - es lief kein %s"
+                           % KILL_TARGET)
 
     def kill_process(self):
         """Beendet den copyData.py-Prozess hart. True, wenn etwas beendet wurde."""

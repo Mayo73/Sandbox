@@ -38,6 +38,12 @@ geschrieben – so bleibt die GUI bedienbar. Damit `copyData.py` seine Ausgabe
 Die Dateinamen stehen oben in `ui.py` im **CONFIG**-Block und koennen dort
 angepasst werden. Voraussetzung: `ui.py` liegt im selben Ordner wie `copyData.py`.
 
+**Logging:** `ui.py` uebernimmt die `write_log`-Funktion aus `copyData.py`
+(gleicher `logs`-Ordner, gleiches Zeitstempel-Format) und schreibt beim
+Druecken von **Ueberspringen**, **Fortsetzen**, **Stop** und **Stop erzwingen**
+je einen eigenen Eintrag – sowohl in die Log-Datei (`logs/log_ui_<Zeit>.txt`)
+als auch in die eingebettete Konsole.
+
 ### HTML-Oberflaeche (ui.hta)
 Eine moderne, anklickbare Oberflaeche auf HTML/CSS-Basis mit vier Buttons:
 
