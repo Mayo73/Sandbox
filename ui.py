@@ -5,7 +5,8 @@ Die Batch-Dateien werden OHNE externes Terminalfenster gestartet; ihre Ausgabe
 erscheint live in einem eingebauten Konsolen-Panel innerhalb der GUI.
 Tkinter gehoert zur Python-Standardbibliothek - keine Zusatzpakete noetig.
 
-Bedienung: Buttons anklicken oder Tasten 1-5, Esc schliesst das Fenster.
+Bedienung: Buttons anklicken oder Tasten 1-5. Schliessen ueber das Fenster-X
+(mit Bestaetigung).
 """
 
 import os
@@ -87,7 +88,7 @@ class App:
         head.pack(fill="x", padx=22, pady=(18, 8))
         tk.Label(head, text="A U T O   L V   2 . 0",
                  font=("Segoe UI", 20, "bold"), fg=WHITE, bg=BG).pack(anchor="w")
-        tk.Label(head, text="Waehle eine Option  -  Tasten 1 - 5  -  Esc zum Schliessen",
+        tk.Label(head, text="Waehle eine Option  -  Tasten 1 - 5",
                  font=("Segoe UI", 9), fg=SUBGRAY, bg=BG).pack(anchor="w")
 
         # ----- Koerper: links Buttons, rechts Konsole -----
@@ -139,15 +140,22 @@ class App:
         self.console.pack(side="left", fill="both", expand=True)
         scroll.config(command=self.console.yview)
 
-        # Tastatur
+        # Tastatur (Esc schliesst bewusst NICHT mehr)
         root.bind("1", lambda e: self.do_start())
         root.bind("2", lambda e: self.do_skip())
         root.bind("3", lambda e: self.do_resume())
         root.bind("4", lambda e: self.do_stop())
         root.bind("5", lambda e: self.do_force_stop())
-        root.bind("<Escape>", lambda e: root.destroy())
+
+        # Schliessen ueber das Fenster-X: Bestaetigung abfragen
+        root.protocol("WM_DELETE_WINDOW", self.on_close)
 
         self._poll_output()
+
+    def on_close(self):
+        """Bestaetigung beim Schliessen ueber das Fenster-X."""
+        if messagebox.askyesno("Beenden", "AUTO LV 2.0 wirklich schliessen?"):
+            self.root.destroy()
 
     # ----- Button-Bau -----
     def _button(self, parent, kind, key, icon, label, desc, command):
