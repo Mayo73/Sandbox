@@ -12,6 +12,7 @@ Bedienung: Buttons anklicken oder Tasten 1-5. Schliessen ueber das Fenster-X
 import os
 import queue
 import subprocess
+import sys
 import threading
 import tkinter as tk
 from datetime import datetime
@@ -69,6 +70,7 @@ ACCENTS = {
     "resume": "#e5b700",
     "stop":   "#ff9d3d",
     "kill":   "#ff4d4d",
+    "logs":   "#c8a2ff",
 }
 
 
@@ -80,15 +82,15 @@ class App:
 
         root.title("AUTO LV 2.0")
         root.configure(bg=BG)
-        root.geometry("1000x640")
-        root.minsize(860, 560)
+        root.geometry("1000x700")
+        root.minsize(860, 620)
 
         # ----- Kopfbereich -----
         head = tk.Frame(root, bg=BG)
         head.pack(fill="x", padx=22, pady=(18, 8))
         tk.Label(head, text="A U T O   L V   2 . 0",
                  font=("Segoe UI", 20, "bold"), fg=WHITE, bg=BG).pack(anchor="w")
-        tk.Label(head, text="Waehle eine Option  -  Tasten 1 - 5",
+        tk.Label(head, text="Waehle eine Option  -  Tasten 1 - 6",
                  font=("Segoe UI", 9), fg=SUBGRAY, bg=BG).pack(anchor="w")
 
         # ----- Koerper: links Buttons, rechts Konsole -----
@@ -110,6 +112,9 @@ class App:
                      "sanft - nach aktueller Mappe", self.do_stop)
         self._button(left, "kill",   "5", "✕", "Stop erzwingen",
                      "hart - sofort beenden", self.do_force_stop)
+        tk.Frame(left, bg="#262626", height=1).pack(fill="x", pady=(8, 2))
+        self._button(left, "logs",   "6", "🗀", "Logs oeffnen",
+                     "Log-Ordner im Explorer oeffnen", self.do_open_logs)
 
         # ----- Konsole rechts -----
         right = tk.Frame(body, bg=BG)
@@ -146,6 +151,7 @@ class App:
         root.bind("3", lambda e: self.do_resume())
         root.bind("4", lambda e: self.do_stop())
         root.bind("5", lambda e: self.do_force_stop())
+        root.bind("6", lambda e: self.do_open_logs())
 
         # Schliessen ueber das Fenster-X: Bestaetigung abfragen
         root.protocol("WM_DELETE_WINDOW", self.on_close)
@@ -290,6 +296,25 @@ class App:
     # ----- Aktionen -----
     def do_start(self):
         self.run_batch(FILE_START)
+
+    def do_open_logs(self):
+        """Oeffnet den Log-Ordner im Datei-Explorer."""
+        try:
+            LOG_DIR.mkdir(parents=True, exist_ok=True)  # anlegen, falls noch nicht da
+        except Exception:
+            pass
+        path = str(LOG_DIR)
+        try:
+            if os.name == "nt":
+                os.startfile(path)                       # Windows-Explorer
+            elif sys.platform == "darwin":
+                subprocess.Popen(["open", path])         # macOS
+            else:
+                subprocess.Popen(["xdg-open", path])     # Linux
+        except Exception as exc:
+            messagebox.showerror(
+                "Logs oeffnen",
+                "Der Ordner konnte nicht geoeffnet werden:\n%s\n\n%s" % (path, exc))
 
     def do_skip(self):
         self.write_log("Aktion 'Ueberspringen' - starte %s" % FILE_SKIP)

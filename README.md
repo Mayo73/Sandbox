@@ -23,10 +23,11 @@ Die Batch-Dateien laufen hier **ohne externes Terminalfenster** – ihre Ausgabe
 erscheint live im **eingebauten Konsolen-Panel** rechts in der GUI.
 
 1. Per Doppelklick oder `python ui.py` starten.
-2. Button anklicken – oder die Tasten **1** bis **5** druecken.
+2. Button anklicken – oder die Tasten **1** bis **6** druecken.
 3. Start/Ueberspringen/Fortsetzen starten ihre Batch-Datei eingebettet (Ausgabe
    im Panel rechts); **Stop** schreibt `STOP.flag`, **Stop erzwingen** killt den
-   `copyData.py`-Prozess. **Leeren** loescht die Konsole.
+   `copyData.py`-Prozess. **Logs oeffnen** oeffnet den `logs`-Ordner im
+   Datei-Explorer. **Leeren** loescht die Konsole.
 4. Schliessen ueber das Fenster-**X** (mit Sicherheitsabfrage). **Esc** schliesst
    die Oberflaeche bewusst **nicht**.
 
