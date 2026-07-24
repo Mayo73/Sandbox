@@ -8,21 +8,25 @@ Eine Steuerung mit den Aktionen Start, Ueberspringen, Fortsetzen und Stop,
 wahlweise als Batch-Menue, HTML-Oberflaeche oder Python-Oberflaeche.
 
 ### Dateien
-- `ui.py`         – grafische **Python-Oberflaeche** (Tkinter), keine Zusatzpakete
+- `ui.pyw`        – grafische **Python-Oberflaeche** (Tkinter), keine Zusatzpakete
 - `ui.hta`        – grafische **HTML-Oberflaeche** (HTA) mit denselben Aktionen
 - `menu.bat`      – Hauptmenue (Pfeiltasten) mit allen Optionen + **Beenden**
 - `run.bat`       – Option **Start** (Vorgang neu starten)
 - `skip.bat`      – Option **Ueberspringen und Fortsetzen**
 - `continue.bat`  – Option **Fortsetzen** (ohne zu ueberspringen)
 
-### Python-Oberflaeche (ui.py)
+### Python-Oberflaeche (ui.pyw)
 Gleiche fuenf Aktionen wie die HTA, als native Tkinter-Oberflaeche
 (Tkinter ist Teil der Python-Standardbibliothek – keine Installation noetig).
 
 Die Batch-Dateien laufen hier **ohne externes Terminalfenster** – ihre Ausgabe
 erscheint live im **eingebauten Konsolen-Panel** rechts in der GUI.
 
-1. Per Doppelklick oder `python ui.py` starten.
+Dateiendung **`.pyw`**: Beim Doppelklick startet Windows die Oberflaeche mit
+`pythonw.exe`, also **ohne** zusaetzliches Konsolenfenster. (Zum Debuggen mit
+sichtbarer Konsole kann man sie auch mit `python ui.pyw` starten.)
+
+1. Per Doppelklick starten (oder `python ui.pyw`).
 2. Steuerung ausschliesslich per **Mausklick** auf die Buttons.
 3. Start/Ueberspringen/Fortsetzen starten ihre Batch-Datei eingebettet (Ausgabe
    im Panel rechts); **Stop** schreibt `STOP.flag`, **Stop erzwingen** killt den
@@ -38,10 +42,10 @@ geschrieben – so bleibt die GUI bedienbar. Damit `copyData.py` seine Ausgabe
 **sofort** (statt blockweise gepuffert) liefert, wird der Prozess mit
 `PYTHONUNBUFFERED=1` gestartet. Es laeuft jeweils ein Vorgang gleichzeitig.
 
-Die Dateinamen stehen oben in `ui.py` im **CONFIG**-Block und koennen dort
-angepasst werden. Voraussetzung: `ui.py` liegt im selben Ordner wie `copyData.py`.
+Die Dateinamen stehen oben in `ui.pyw` im **CONFIG**-Block und koennen dort
+angepasst werden. Voraussetzung: `ui.pyw` liegt im selben Ordner wie `copyData.py`.
 
-**Logging:** `ui.py` uebernimmt die `write_log`-Funktion aus `copyData.py`
+**Logging:** `ui.pyw` uebernimmt die `write_log`-Funktion aus `copyData.py`
 (gleiches Zeitstempel-Format) und schreibt beim Druecken von **Ueberspringen**,
 **Fortsetzen**, **Stop** und **Stop erzwingen** je einen eigenen Eintrag. Die
 Eintraege landen in **derselben** Log-Datei des aktuellen Laufs (die neueste

@@ -5,6 +5,9 @@ Die Batch-Dateien werden OHNE externes Terminalfenster gestartet; ihre Ausgabe
 erscheint live in einem eingebauten Konsolen-Panel innerhalb der GUI.
 Tkinter gehoert zur Python-Standardbibliothek - keine Zusatzpakete noetig.
 
+Dateiendung .pyw: Doppelklick startet die GUI mit pythonw.exe, also ohne
+zusaetzliches Konsolenfenster.
+
 Bedienung: Buttons per Mausklick. Schliessen ueber das Fenster-X
 (mit Bestaetigung).
 """
