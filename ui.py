@@ -5,7 +5,7 @@ Die Batch-Dateien werden OHNE externes Terminalfenster gestartet; ihre Ausgabe
 erscheint live in einem eingebauten Konsolen-Panel innerhalb der GUI.
 Tkinter gehoert zur Python-Standardbibliothek - keine Zusatzpakete noetig.
 
-Bedienung: Buttons anklicken oder Tasten 1-5. Schliessen ueber das Fenster-X
+Bedienung: Buttons per Mausklick. Schliessen ueber das Fenster-X
 (mit Bestaetigung).
 """
 
@@ -90,7 +90,7 @@ class App:
         head.pack(fill="x", padx=22, pady=(18, 8))
         tk.Label(head, text="A U T O   L V   2 . 0",
                  font=("Segoe UI", 20, "bold"), fg=WHITE, bg=BG).pack(anchor="w")
-        tk.Label(head, text="Waehle eine Option  -  Tasten 1 - 6",
+        tk.Label(head, text="Waehle eine Option per Mausklick",
                  font=("Segoe UI", 9), fg=SUBGRAY, bg=BG).pack(anchor="w")
 
         # ----- Koerper: links Buttons, rechts Konsole -----
@@ -101,19 +101,19 @@ class App:
         left.pack(side="left", fill="y")
         left.pack_propagate(False)
 
-        self._button(left, "start",  "1", "▶", "Start",
+        self._button(left, "start",  "▶", "Start",
                      "neue Zielmappe, Vorgang neu", self.do_start)
-        self._button(left, "skip",   "2", "⏭", "Ueberspringen",
+        self._button(left, "skip",   "⏭", "Ueberspringen",
                      "aktuelle Mappe ueberspringen", self.do_skip)
-        self._button(left, "resume", "3", "↻", "Fortsetzen",
+        self._button(left, "resume", "↻", "Fortsetzen",
                      "ohne zu ueberspringen", self.do_resume)
         tk.Frame(left, bg="#262626", height=1).pack(fill="x", pady=(8, 2))
-        self._button(left, "stop",   "4", "■", "Stop",
+        self._button(left, "stop",   "■", "Stop",
                      "sanft - nach aktueller Mappe", self.do_stop)
-        self._button(left, "kill",   "5", "✕", "Stop erzwingen",
+        self._button(left, "kill",   "✕", "Stop erzwingen",
                      "hart - sofort beenden", self.do_force_stop)
         tk.Frame(left, bg="#262626", height=1).pack(fill="x", pady=(8, 2))
-        self._button(left, "logs",   "6", "🗀", "Logs oeffnen",
+        self._button(left, "logs",   "🗀", "Logs oeffnen",
                      "Log-Ordner im Explorer oeffnen", self.do_open_logs)
 
         # ----- Konsole rechts -----
@@ -145,13 +145,7 @@ class App:
         self.console.pack(side="left", fill="both", expand=True)
         scroll.config(command=self.console.yview)
 
-        # Tastatur (Esc schliesst bewusst NICHT mehr)
-        root.bind("1", lambda e: self.do_start())
-        root.bind("2", lambda e: self.do_skip())
-        root.bind("3", lambda e: self.do_resume())
-        root.bind("4", lambda e: self.do_stop())
-        root.bind("5", lambda e: self.do_force_stop())
-        root.bind("6", lambda e: self.do_open_logs())
+        # Steuerung ausschliesslich per Mausklick (keine Tastenkuerzel)
 
         # Schliessen ueber das Fenster-X: Bestaetigung abfragen
         root.protocol("WM_DELETE_WINDOW", self.on_close)
@@ -164,7 +158,7 @@ class App:
             self.root.destroy()
 
     # ----- Button-Bau -----
-    def _button(self, parent, kind, key, icon, label, desc, command):
+    def _button(self, parent, kind, icon, label, desc, command):
         accent = ACCENTS[kind]
         card = tk.Frame(parent, bg=CARD, highlightbackground="#2a2a2a",
                         highlightthickness=1, cursor="hand2")
@@ -183,12 +177,8 @@ class App:
         desc_lbl = tk.Label(text, text=desc, font=("Segoe UI", 8),
                             fg=GRAY, bg=CARD, anchor="w")
         desc_lbl.pack(fill="x")
-        key_lbl = tk.Label(inner, text=key, font=("Segoe UI", 9), fg="#8a8a8a",
-                           bg=CARD, padx=7, pady=1,
-                           highlightbackground="#333", highlightthickness=1)
-        key_lbl.pack(side="right")
 
-        widgets = [card, inner, icon_lbl, text, title_lbl, desc_lbl, key_lbl]
+        widgets = [card, inner, icon_lbl, text, title_lbl, desc_lbl]
 
         def on_enter(_):
             for w in widgets:
