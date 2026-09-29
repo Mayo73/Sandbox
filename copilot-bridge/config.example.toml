@@ -1,0 +1,85 @@
+# copilot-bridge configuration
+# Copy to config.toml (python run_bridge.py init) and adjust.
+
+[edge]
+# Leave empty to auto-detect msedge.exe (registry + usual install paths).
+executable = ""
+port = 9222
+# Separate Edge profile for the bridge. Sign in to Copilot once here; it sticks.
+# Leave empty for %LOCALAPPDATA%\CopilotBridge\EdgeProfile
+user_data_dir = ""
+start_url = "https://copilot.microsoft.com/"
+# true = use your everyday Edge profile. ALL Edge windows must be closed first,
+# otherwise the new process just hands the URL to the running one and the
+# debugging port never opens.
+use_existing_profile = false
+# true = never start Edge, only attach to a port that is already open.
+attach_only = false
+extra_args = []
+
+[watch]
+# A DevTools target counts as "the chat" when its URL contains one of these.
+target_url_contains = [
+    "copilot.microsoft.com",
+    "m365.cloud.microsoft",
+    "www.bing.com/chat",
+    "edgeservices.bing.com",
+]
+poll_ms = 700
+# A message is only acted on once its text has not changed for this long -
+# that is how streaming answers are detected as finished.
+stable_ms = 1500
+# Which side of the conversation may issue tool calls.
+roles = ["assistant"]
+# Copilot's markup changes; when the role cannot be determined, still accept it.
+accept_unknown_role = true
+profile = "auto"
+max_message_chars = 40000
+# true = also run the calls that are already on screen when the bridge starts.
+execute_backlog = false
+
+[policy]
+# ask       every call is confirmed at the console   (recommended)
+# auto_safe read-only tools run on their own, the rest is confirmed
+# auto      everything runs unattended               (know what you are doing)
+mode = "ask"
+
+# Empty allowed_tools means "every registered tool". Otherwise it is a strict
+# allowlist. denied_tools always wins.
+allowed_tools = []
+denied_tools = []
+
+# File tools may not leave these directories. Without entries they are off.
+allowed_roots = [
+    "%USERPROFILE%\\Desktop",
+    "%USERPROFILE%\\Documents",
+    "%USERPROFILE%\\Downloads",
+    "%TEMP%",
+]
+
+# Substring match, case-insensitive, checked before any command runs.
+shell_denylist = [
+    "format ",
+    "diskpart",
+    "vssadmin delete",
+    "bcdedit",
+    "cipher /w",
+    "rd /s /q c:\\",
+    "rmdir /s /q c:\\",
+    "remove-item -recurse -force c:\\",
+    "mklink /j c:\\",
+    "shutdown",
+    "reg delete hklm",
+    "takeown /f c:\\",
+]
+
+max_calls_per_minute = 20
+confirm_timeout_s = 180
+max_output_chars = 8000
+
+[respond]
+# Post the result back into the chat so Copilot can read it.
+enabled = true
+max_result_chars = 3500
+submit = true
+delay_ms = 400

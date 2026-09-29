@@ -1,0 +1,6 @@
+__pycache__/
+*.pyc
+config.toml
+node_modules
+package-lock.json
+.venv/

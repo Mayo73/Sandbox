@@ -1,0 +1,18 @@
+# Pflicht: WebSocket-Verbindung zum DevTools-Protokoll
+websocket-client>=1.7
+
+# Optional. Fehlt eines davon, meldet das betroffene Werkzeug das beim Aufruf
+# und alles andere laeuft weiter.
+
+# proc.list, proc.kill, Speicherangaben in sys.info
+psutil>=5.9
+
+# ui.click, ui.type, ui.key, ui.screenshot (pillow wird von screenshot gebraucht)
+pyautogui>=0.9.54
+pillow>=10.0
+
+# window.list, window.focus
+pygetwindow>=0.0.9
+
+# Zwischenablage ausserhalb von Windows (unter Windows genuegt PowerShell)
+pyperclip>=1.8
